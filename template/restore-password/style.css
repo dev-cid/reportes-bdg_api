@@ -1,0 +1,82 @@
+.top-image {
+	width: 100px;
+	height: 100px;
+}
+
+.image-section {
+	border-collapse: collapse;
+	border: 0;
+	margin: 0;
+	padding: 0;
+	-webkit-text-size-adjust: none;
+	color: #555559;
+	font-family: Arial, sans-serif;
+	font-size: 16px;
+	line-height: 26px;
+	background-color: #fff;
+	border-bottom: 4px solid #00a5b5
+}
+
+.tbl-index {
+	font-weight: normal;
+	border-collapse: collapse;
+	border: 0;
+	margin: 0;
+	padding: 0;
+	font-family: ANTENNACOND-BOLD;
+}
+
+.head-title {
+	font-size: 20px;
+	line-height: 34px;
+	font-weight: bold;
+	text-align: center;
+	font-family: ANTENNACOND-BOLD;
+}
+
+.grey-block {
+	padding: 18px;
+	font-family: ANTENNACOND-BOLD;
+	border-top: 3px solid #00a5b5;
+	border-left: 1px solid #E6E6E6;
+	border-right: 1px solid #E6E6E6;
+	border-bottom: 1px solid #E6E6E6;
+	width: 250px;
+	text-align: center;
+}
+
+.link {
+	color: #ffffff;
+	background-color: #00a5b5;
+	border-top: 10px solid #00a5b5;
+	border-bottom: 10px solid #00a5b5;
+	border-left: 20px solid #00a5b5;
+	border-right: 20px solid #00a5b5;
+	border-radius: 3px;
+	text-decoration: none;
+}
+
+.td-restored-pass {
+	border-collapse: collapse;
+	border: 0;
+	margin: 0;
+	padding: 0;
+	-webkit-text-size-adjust: none;
+	color: #555559;
+	font-family: Arial, sans-serif;
+	font-size: 16px;
+	line-height: 24px;
+	padding: 20px;
+}
+
+.inside-footer {
+	padding: 20px;
+	-webkit-text-size-adjust: none;
+	color: #555559;
+	font-family: Arial, sans-serif;
+	font-size: 12px;
+	line-height: 16px;
+	vertical-align: middle;
+	text-align: center;
+	width: 580px;
+}
