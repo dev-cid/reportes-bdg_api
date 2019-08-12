@@ -1,16 +1,16 @@
-var nodemailer = require('nodemailer');
+var nodemailer = require("nodemailer");
 
 module.exports = {
+  transporter: async function() {
+    const result = await nodemailer.createTransport({
+      host: "smtp.office365.com",
+      port: 587,
+      auth: {
+        user: "no-reply@cid.edu.co",
+        pass: "Cid2019."
+      }
+    });
 
-    transporter: async function(){
-       const result = await nodemailer.createTransport({
-            service: 'Gmail',
-            auth: {
-                user: 'cardenasvillaevelyn@gmail.com',
-                pass: 'prueba.net'
-            }
-        });
-
-        return result
-    },
-}
+    return result;
+  }
+};

@@ -1,53 +1,49 @@
-const connection = require('../server/config');
+const conn_local = require("../server/cg_local");
+const conn_moodle = require("../server/cg_moodle");
 
 module.exports = {
-    create: function (tbl, params, cb) {
-        let string="";
-        let values="";
-        for (let index in params) {
-            string+= `${index},`
-            values+= `'${params[index]}',`
-        }
-        string = string.slice(0,-1);
-        values = values.slice(0,-1);
+  /*Conexiones locales*/
+  query_l: function(sql, cb) {
+    conn_local.query(sql, function(err, results) {
+      if (err)
+        return cb({ message: "Error en el servidor: " + err, status: 500 });
+      return cb({ message: results, status: 200 });
+    });
+  },
 
-        let sql = `INSERT INTO ${tbl} (${string}) VALUES(${values})`;
-        connection.query(sql, function (err, results) {
-            if (err) return cb('Error en el servidor: ' + err);
-            return cb('Creación exitosa');
-        });
-    },
-    get: function (tbl,cb) {
-        let sql = `SELECT * FROM ${tbl}`;
-        connection.query(sql, function (err, results) {
-            if (err) return cb('Error en el servidor: ' + err);
-            return cb(results);
-        });
-    },
-    update: function (tbl, params, id, cb) {
-        params = JSON.parse(params);
-        let string="";
-        for (let index in params) {
-            string+= `${index}='${params[index]}',` 
-        }
-        string = string.slice(0,-1);
-        let sql = `UPDATE ${tbl} SET ${string} WHERE id = ${id}`;
-        connection.query(sql, function (err, results) {
-            if (err) return cb('Error en el servidor: ' + err);
-            return cb('Actualización exitosa');
-        });
-    },
-    delete: function (tbl, id, cb) {
-        let sql = `UPDATE ${tbl} SET status = 0 WHERE id = ${id}`;
-        connection.query(sql, function (err, results) {
-            if (err) return cb('Error en el servidor: ' + err);
-            return cb('Eliminado lógico exitoso');
-        });
-    },
-    query: function (sql, cb) {
-        connection.query(sql, function (err, results) {
-            if (err) return cb('Error en el servidor: ' + err);
-            return cb(results);
-        });
-    },
-}
+  get_l: function(tbl, cb) {
+    let sql = `SELECT * FROM ${tbl}`;
+    conn_local.query(sql, function(err, results) {
+      if (err)
+        return cb({ message: "Error en el servidor: " + err, status: 500 });
+      return cb({ message: results, status: 200 });
+    });
+  },
+
+  create_l: function(tbl, params, cb) {
+    let string = "";
+    let values = "";
+    for (let index in params) {
+      string += `${index},`;
+      values += `'${params[index]}',`;
+    }
+    string = string.slice(0, -1);
+    values = values.slice(0, -1);
+
+    let sql = `INSERT INTO ${tbl} (${string}) VALUES(${values})`;
+    conn_local.query(sql, function(err, results) {
+      if (err)
+        return cb({ message: "Error en el servidor: " + err, status: 500 });
+      return cb({ message: "Creación exitosa", status: 200 });
+    });
+  },
+
+  /*Conexiones a moodle*/
+  query: function(sql, cb) {
+    conn_moodle.query(sql, function(err, results) {
+      if (err)
+        return cb({ message: "Error en el servidor: " + err, status: 500 });
+      return cb({ message: results, status: 200 });
+    });
+  }
+};
