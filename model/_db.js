@@ -6,8 +6,11 @@ module.exports = {
   query_l: function(sql, cb) {
     conn_local.query(sql, function(err, results) {
       if (err)
-        return cb({ message: "Error en el servidor: " + err, status: 500 });
-      return cb({ message: results, status: 200 });
+        return cb({
+          message: "Error en el servidor: " + err,
+          status: 500
+        });
+      return cb({ message: results, status: 200, new: "" });
     });
   },
 
@@ -15,7 +18,10 @@ module.exports = {
     let sql = `SELECT * FROM ${tbl}`;
     conn_local.query(sql, function(err, results) {
       if (err)
-        return cb({ message: "Error en el servidor: " + err, status: 500 });
+        return cb({
+          message: "Error en el servidor: " + err,
+          status: 500
+        });
       return cb({ message: results, status: 200 });
     });
   },

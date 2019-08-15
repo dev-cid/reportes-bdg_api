@@ -1,6 +1,10 @@
 const API_BASE = "/api/ticket";
 const ctrl_ticket = require("../../controller/TicketController");
 
+/*Upfile*/
+const multer = require("multer");
+const uploads = multer();
+
 module.exports = function(app) {
   /*Traer los tipos de tickets*/
   app.get(`${API_BASE}/type`, (req, res) => {
@@ -39,24 +43,42 @@ module.exports = function(app) {
 
   /*Traer los tickets montados*/
   app.get(`${API_BASE}/getMe/:id`, (req, res) => {
-    ctrl_ticket.show_me(function(data) {
+    ctrl_ticket.show_me(req.params.id, function(data) {
       res.json(data);
     });
   });
 
   /*Guardar los tickets*/
   app.post(`${API_BASE}/create`, (req, res) => {
-    ctrl_ticket.create(req.body, function(data) {
+    ctrl_ticket.create(req, function(data) {
+      res.json(data);
+    });
+  });
+
+  /*Guardar evidencias*/
+  app.post(`${API_BASE}/save_evidences`, uploads.array("url"), (req, res) => {
+    ctrl_ticket.create_evidences(req, function(data) {
       res.json(data);
     });
   });
 
   /*Guardar las respuestas*/
-  app.post(`${API_BASE}/response`, (req, res) => {
+  app.post(`${API_BASE}/response`, uploads.array("url"), (req, res) => {
     ctrl_ticket.create_historic(req.body, function(data) {
       res.json(data);
     });
   });
+
+  /*Guardar evidencias de las respuestas*/
+  app.post(
+    `${API_BASE}/save_evidences_historic`,
+    uploads.array("url"),
+    (req, res) => {
+      ctrl_ticket.create_historic_evidences(req, function(data) {
+        res.json(data);
+      });
+    }
+  );
 
   /*Un tickets*/
   app.get(`${API_BASE}/show/:id`, (req, res) => {
@@ -68,6 +90,13 @@ module.exports = function(app) {
   /*Detalle del ticket*/
   app.get(`${API_BASE}/show_detail/:id`, (req, res) => {
     ctrl_ticket.show_detail(req.params.id, function(data) {
+      res.json(data);
+    });
+  });
+
+  /*Actualizar estado*/
+  app.post(`${API_BASE}/updateStatus/:id/:status`, (req, res) => {
+    ctrl_ticket.update_status(req.params.id, req.params.status, function(data) {
       res.json(data);
     });
   });

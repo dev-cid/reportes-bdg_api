@@ -22,7 +22,7 @@ module.exports = function(app) {
     });
   });
 
-  app.post(`${API_BASE}auth/logout`, (req, res) => {
+  app.post(`${API_BASE}/auth/logout`, (req, res) => {
     res.status(200).send({
       auth: false,
       token: null

@@ -2,6 +2,7 @@ const API_BASE = "/api/report";
 const excel = require("excel4node");
 const _db = require("../../model/_db");
 const today = new Date();
+const ctrl_report = require("../../controller/ReportController");
 
 var wb = new excel.Workbook();
 var ws = wb.addWorksheet("Hoja1");
@@ -57,10 +58,8 @@ var style_head = wb.createStyle({
 });
 
 module.exports = function(app) {
-  app.get(`${API_BASE}/cohorte`, function(req, res) {
+  app.post(`${API_BASE}/cohorte`, function(req, res) {
     _db.query(`CALL sp_calificacion_cohorte()`, function(data) {
-      console.log(data);
-      // _db.query(sql, function(data) {
       if (data.message.length == 0) {
         ws.cell(1, 1)
           .string("No hay datos para esta consulta.")
@@ -590,11 +589,13 @@ module.exports = function(app) {
           cont++;
         });
 
-        wb.write(
-          `calificación_completa_cohorte_${today.getDate()}/${today.getMonth() +
-            1}/${today.getFullYear()}-${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}.xlsx`,
-          res
-        );
+        ctrl_report.create(req.body, function(data) {
+          wb.write(
+            `calificación_completa_cohorte_${today.getDate()}/${today.getMonth() +
+              1}/${today.getFullYear()}-${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}.xlsx`,
+            res
+          );
+        });
       }
     });
   });

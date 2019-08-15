@@ -5,9 +5,8 @@ var pass_ = require("node-php-password");
 
 module.exports = {
   login: function(req, cb) {
-    console.log(req);
     _db.query(
-      `SELECT u.id, u.firstname, u.lastname, LOWER(REPLACE(TRIM(city), ' ', '_')) as 'city', u.username, (SELECT roleid FROM mdl_role_assignments WHERE userid = u.id ORDER BY timemodified DESC LIMIT 1) as 'roleid', password FROM mdl_user u WHERE u.username = '${
+      `SELECT u.id, u.email, u.firstname, u.lastname, LOWER(REPLACE(TRIM(city), ' ', '_')) as 'city', u.username, (SELECT roleid FROM mdl_role_assignments WHERE userid = u.id ORDER BY timemodified DESC LIMIT 1) as 'roleid', password FROM mdl_user u WHERE u.username = '${
         req.username
       }' and u.confirmed = 1 and u.deleted = 0 and u.suspended = 0`,
       function(results) {
