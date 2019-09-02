@@ -67,10 +67,18 @@ module.exports = {
     }
   },
 
-  show: function(cb) {
-    _db.get_l(`ticket`, function(data) {
-      return cb(data);
-    });
+  show: function(status, cb) {
+    if (status == "0") {
+      _db.get_l(`ticket`, function(data) {
+        return cb(data);
+      });
+    } else {
+      _db.query_l(`SELECT * FROM ticket WHERE status = '${status}'`, function(
+        data
+      ) {
+        return cb(data);
+      });
+    }
   },
 
   show_for_assign: function(id, cb) {
@@ -81,19 +89,49 @@ module.exports = {
     });
   },
 
-  show_for_user: function(id, cb) {
-    _db.query_l(`SELECT * FROM ticket WHERE manager = ${id}`, function(data) {
-      return cb(data);
-    });
+  show_for_user: function(id, status, cb) {
+    if (status == "0") {
+      _db.query_l(`SELECT * FROM ticket WHERE manager = ${id}`, function(data) {
+        return cb(data);
+      });
+    } else {
+      _db.query_l(
+        `SELECT * FROM ticket WHERE manager = ${id} and status = '${status}'`,
+        function(data) {
+          return cb(data);
+        }
+      );
+    }
   },
 
-  show_me: function(id, cb) {
-    _db.query_l(
-      `SELECT * FROM ticket WHERE id_user = ${id} ORDER BY status desc, id desc`,
+  show_gestor: function(cb) {
+    _db.query(
+      `SELECT u.id, CONCAT(firstname,' ', lastname) as name FROM mdl_user u
+      JOIN mdl_role_assignments r ON r.userid = u.id 
+      WHERE r.roleid IN (1,9) and deleted = 0 
+      ORDER BY name ASC`,
       function(data) {
         return cb(data);
       }
     );
+  },
+
+  show_me: function(id, status, cb) {
+    if (status == 0) {
+      _db.query_l(
+        `SELECT * FROM ticket WHERE id_user = ${id} ORDER BY status desc, id desc`,
+        function(data) {
+          return cb(data);
+        }
+      );
+    } else {
+      _db.query_l(
+        `SELECT * FROM ticket WHERE id_user = ${id} and status = '${status}' ORDER BY status desc, id desc`,
+        function(data) {
+          return cb(data);
+        }
+      );
+    }
   },
 
   show_one: function(id, cb) {
@@ -143,12 +181,26 @@ module.exports = {
 
   cohort: function(cb) {
     _db.query(
-      `SELECT * FROM mdl_cohort WHERE visible = 1  ORDER BY name ASC`,
+      `SELECT c.id, c.name FROM mdl_cohort c
+       WHERE c.visible = 1   
+       ORDER BY name ASC`,
       function(data) {
         return cb(data);
       }
     );
   },
+
+  // cohort: function(id_user, cb) {
+  //   _db.query(
+  //     `SELECT c.id, c.name FROM mdl_cohort c
+  //      JOIN mdl_cohort_members cm ON cm.cohortid = c.id
+  //      WHERE c.visible = 1 and cm.userid = ${id_user}
+  //      ORDER BY name ASC`,
+  //     function(data) {
+  //       return cb(data);
+  //     }
+  //   );
+  // },
 
   subject: function(cb) {
     _db.query(
@@ -162,6 +214,15 @@ module.exports = {
   update_status: function(id, status, cb) {
     _db.query_l(
       `UPDATE ticket SET status = '${status}' WHERE id = ${id}`,
+      function(data) {
+        return cb(data);
+      }
+    );
+  },
+
+  update_manager: function(id, id_ticket, cb) {
+    _db.query_l(
+      `UPDATE ticket SET id_manager = '${id}' WHERE id = ${id_ticket}`,
       function(data) {
         return cb(data);
       }
@@ -230,9 +291,7 @@ module.exports = {
                       });
                     } else {
                       _db.query_l(
-                        `UPDATE ticket SET status = 'Resuelto' WHERE id = ${
-                          req.id_ticket
-                        }`,
+                        `UPDATE ticket SET status = 'Resuelto' WHERE id = ${req.id_ticket}`,
                         function(res) {
                           _db.query_l(
                             "SELECT id FROM historic_tickets ORDER BY id desc LIMIT 1",
@@ -287,5 +346,15 @@ module.exports = {
         status: 202
       });
     }
+  },
+
+  show_report_ticket: function(req, cb) {
+    var body = req.body;
+    _db.query_l(
+      `CALL sp_report_ticket('${body.start_date}', '${body.end_date}')`,
+      function(data) {
+        return cb(data);
+      }
+    );
   }
 };

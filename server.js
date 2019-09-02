@@ -8,6 +8,7 @@ app.use(bodyParser.json());
 /*Redirección a las rutas del proyecto*/
 require("./routes/api/auth")(app);
 require("./routes/api/ticket")(app);
+require("./routes/api/certificate")(app);
 require("./routes/api/report_clf_cohorte")(app);
 require("./routes/api/report_clf_coordinador")(app);
 require("./routes/api/report_clf_materia")(app);

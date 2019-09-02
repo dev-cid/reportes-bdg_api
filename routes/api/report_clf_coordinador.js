@@ -59,7 +59,10 @@ var style_head = wb.createStyle({
 
 module.exports = function(app) {
   app.post(`${API_BASE}/coordinador`, function(req, res) {
-    _db.query(`CALL sp_calificacion_coordinador()`, function(data) {
+    var params = req.body;
+    _db.query(`CALL sp_calificacion_coordinador(${params.id_cohort})`, function(
+      data
+    ) {
       var cont = 2;
       if (data.message.length == 0) {
         ws.cell(1, 1)

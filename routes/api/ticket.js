@@ -5,6 +5,10 @@ const ctrl_ticket = require("../../controller/TicketController");
 const multer = require("multer");
 const uploads = multer();
 
+const pdf = require("html-pdf");
+/*Plantilla para el pdf*/
+const pdfTemplate = require("../../template/pdf/ticket");
+
 module.exports = function(app) {
   /*Traer los tipos de tickets*/
   app.get(`${API_BASE}/type`, (req, res) => {
@@ -14,6 +18,11 @@ module.exports = function(app) {
   });
 
   /*Traer las cohortes*/
+  // app.get(`${API_BASE}/cohort/:id_user`, (req, res) => {
+  //   ctrl_ticket.cohort(req.params.id_user, function(data) {
+  //     res.json(data);
+  //   });
+  // });
   app.get(`${API_BASE}/cohort`, (req, res) => {
     ctrl_ticket.cohort(function(data) {
       res.json(data);
@@ -28,22 +37,29 @@ module.exports = function(app) {
   });
 
   /*Traer todos los tickets*/
-  app.get(`${API_BASE}/getAll`, (req, res) => {
-    ctrl_ticket.show(function(data) {
+  app.get(`${API_BASE}/getAll/:status`, (req, res) => {
+    ctrl_ticket.show(req.params.status, function(data) {
       res.json(data);
     });
   });
 
   /*Traer los tickets asignados*/
-  app.get(`${API_BASE}/getWork/:id`, (req, res) => {
-    ctrl_ticket.show_for_user(function(data) {
+  app.get(`${API_BASE}/getWork/:id/:status`, (req, res) => {
+    ctrl_ticket.show_for_user(req.params.id, req.params.status, function(data) {
       res.json(data);
     });
   });
 
   /*Traer los tickets montados*/
-  app.get(`${API_BASE}/getMe/:id`, (req, res) => {
-    ctrl_ticket.show_me(req.params.id, function(data) {
+  app.get(`${API_BASE}/getMe/:id/:status`, (req, res) => {
+    ctrl_ticket.show_me(req.params.id, req.params.status, function(data) {
+      res.json(data);
+    });
+  });
+
+  /*Traer los gestores de tickets*/
+  app.get(`${API_BASE}/getGestor`, (req, res) => {
+    ctrl_ticket.show_gestor(function(data) {
       res.json(data);
     });
   });
@@ -98,6 +114,31 @@ module.exports = function(app) {
   app.post(`${API_BASE}/updateStatus/:id/:status`, (req, res) => {
     ctrl_ticket.update_status(req.params.id, req.params.status, function(data) {
       res.json(data);
+    });
+  });
+
+  /*Actualizar gestor de ticket*/
+  app.post(`${API_BASE}/updateManager/:id_user/:id_ticket`, (req, res) => {
+    ctrl_ticket.update_manager(
+      req.params.id_user,
+      req.params.id_ticket,
+      function(data) {
+        res.json(data);
+      }
+    );
+  });
+
+  /*Generación de pdf*/
+  app.post(`${API_BASE}/create_report_ticket`, (req, res) => {
+    ctrl_ticket.show_report_ticket(req, data => {
+      pdf
+        .create(pdfTemplate(data.message[0][0]), {})
+        .toFile(`${__dirname}/reporte_ticket.pdf`, err => {
+          if (err) {
+            return Promise.reject();
+          }
+          res.sendFile(`${__dirname}/reporte_ticket.pdf`);
+        });
     });
   });
 };
