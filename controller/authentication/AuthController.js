@@ -6,15 +6,10 @@ var pass_ = require("node-php-password");
 module.exports = {
   login: function(req, cb) {
     _db.query(
-      `SELECT u.id, u.email, u.firstname, u.lastname, LOWER(REPLACE(TRIM(city), ' ', '_')) as 'city', u.username, password, CASE
-        WHEN roleid = 9 THEN 9
-        WHEN roleid = 11 THEN 11
-        WHEN roleid = 4 THEN 4
-        WHEN roleid = 5 THEN 5
-        ELSE roleid
-        END roleid FROM mdl_role_assignments r
+      `SELECT u.id, u.email, u.firstname, u.lastname, LOWER(REPLACE(TRIM(city), ' ', '_')) as 'city', u.username, password, roleid
+      FROM mdl_role_assignments r
       JOIN mdl_user u ON r.userid = u.id
-      WHERE u.username = '${req.username}' and u.confirmed = 1 and u.deleted = 0 and u.suspended = 0 LIMIT 1`,
+      WHERE u.username = '${req.username}' and u.confirmed = 1 and u.deleted = 0 and u.suspended = 0 and roleid in (9,11,4,5) limit 1`,
       function(results) {
         if (results.message.length == 0)
           return cb({
