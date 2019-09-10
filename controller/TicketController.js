@@ -91,12 +91,14 @@ module.exports = {
 
   show_for_user: function(id, status, cb) {
     if (status == "0") {
-      _db.query_l(`SELECT * FROM ticket WHERE manager = ${id}`, function(data) {
+      _db.query_l(`SELECT * FROM ticket WHERE id_manager = ${id}`, function(
+        data
+      ) {
         return cb(data);
       });
     } else {
       _db.query_l(
-        `SELECT * FROM ticket WHERE manager = ${id} and status = '${status}'`,
+        `SELECT * FROM ticket WHERE id_manager = ${id} and status = '${status}'`,
         function(data) {
           return cb(data);
         }
