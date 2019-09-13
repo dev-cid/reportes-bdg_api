@@ -18,11 +18,12 @@ module.exports = function(app) {
   });
 
   /*Traer las cohortes*/
-  // app.get(`${API_BASE}/cohort/:id_user`, (req, res) => {
-  //   ctrl_ticket.cohort(req.params.id_user, function(data) {
-  //     res.json(data);
-  //   });
-  // });
+  app.get(`${API_BASE}/cohort/:id_user`, (req, res) => {
+    ctrl_ticket.cohort(req.params.id_user, function(data) {
+      res.json(data);
+    });
+  });
+
   app.get(`${API_BASE}/cohort`, (req, res) => {
     ctrl_ticket.cohort(function(data) {
       res.json(data);

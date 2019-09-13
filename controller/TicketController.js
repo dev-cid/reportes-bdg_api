@@ -110,7 +110,7 @@ module.exports = {
     _db.query(
       `SELECT u.id, CONCAT(firstname,' ', lastname) as name FROM mdl_user u
       JOIN mdl_role_assignments r ON r.userid = u.id 
-      WHERE r.roleid IN (1,9) and deleted = 0 
+      WHERE r.roleid = 11 and deleted = 0 
       ORDER BY name ASC`,
       function(data) {
         return cb(data);
@@ -192,17 +192,17 @@ module.exports = {
     );
   },
 
-  // cohort: function(id_user, cb) {
-  //   _db.query(
-  //     `SELECT c.id, c.name FROM mdl_cohort c
-  //      JOIN mdl_cohort_members cm ON cm.cohortid = c.id
-  //      WHERE c.visible = 1 and cm.userid = ${id_user}
-  //      ORDER BY name ASC`,
-  //     function(data) {
-  //       return cb(data);
-  //     }
-  //   );
-  // },
+  cohort: function(id_user, cb) {
+    _db.query(
+      `SELECT c.id, c.name FROM mdl_cohort c
+       JOIN mdl_cohort_members cm ON cm.cohortid = c.id
+       WHERE c.visible = 1 and cm.userid = ${id_user}
+       ORDER BY name ASC`,
+      function(data) {
+        return cb(data);
+      }
+    );
+  },
 
   subject: function(cb) {
     _db.query(
