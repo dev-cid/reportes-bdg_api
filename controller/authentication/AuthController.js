@@ -9,7 +9,7 @@ module.exports = {
       `SELECT u.id, u.email, u.firstname, u.lastname, LOWER(REPLACE(TRIM(city), ' ', '_')) as 'city', u.username, password, roleid
       FROM mdl_role_assignments r
       JOIN mdl_user u ON r.userid = u.id
-      WHERE u.username = '${req.username}' and u.confirmed = 1 and u.deleted = 0 and u.suspended = 0 and roleid in (9,11,4,5) limit 1`,
+      WHERE u.username = '${req.username}' and u.confirmed = 1 and u.deleted = 0 and u.suspended = 0 and roleid in (1,9,11,4,5) limit 1`,
       function(results) {
         if (results.message.length == 0)
           return cb({
