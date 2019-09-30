@@ -25,7 +25,8 @@ module.exports = function(app) {
   });
 
   app.get(`${API_BASE}/cohort`, (req, res) => {
-    ctrl_ticket.cohort(function(data) {
+    console.log("maravilloso")
+    ctrl_ticket.cohorts(function(data) {
       res.json(data);
     });
   });
@@ -53,7 +54,9 @@ module.exports = function(app) {
 
   /*Traer los tickets montados*/
   app.get(`${API_BASE}/getMe/:id/:status`, (req, res) => {
+    console.log(req.params.id, req.params.status)
     ctrl_ticket.show_me(req.params.id, req.params.status, function(data) {
+      console.log(data,"me!!")
       res.json(data);
     });
   });

@@ -16,4 +16,4 @@ require("./routes/api/report_clf_municipio")(app);
 require("./routes/views")(app);
 
 /*Configuración de puerto para compilar*/
-app.listen(process.env.PORT || 5000);
+app.listen(process.env.PORT || 5006);

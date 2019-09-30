@@ -181,7 +181,8 @@ module.exports = {
     });
   },
 
-  cohort: function(cb) {
+  cohorts: function(cb) {
+    console.log(2)
     _db.query(
       `SELECT c.id, c.name FROM mdl_cohort c
        WHERE c.visible = 1   

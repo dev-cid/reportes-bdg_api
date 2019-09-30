@@ -51,5 +51,15 @@ module.exports = {
         return cb({ message: "Error en el servidor: " + err, status: 500 });
       return cb({ message: results, status: 200 });
     });
+  },
+  procedure: function(sql,params, cb) {
+    console.log(params)
+    conn_moodle.query(sql, params.join(), function(err, results) {
+      if (err)
+        {
+          return cb({ message: "Error en el servidor: " + err, status: 500 });
+        }
+      return cb({ message: results, status: 200 });
+    });
   }
 };

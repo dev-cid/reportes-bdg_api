@@ -60,9 +60,11 @@ var style_head = wb.createStyle({
 module.exports = function(app) {
   app.post(`${API_BASE}/cohorte`, function(req, res) {
     var params = req.body;
-    _db.query(`CALL sp_calificacion_cohorte(${params.id_cohort})`, function(
+
+    _db.procedure(`CALL sp_calificacion_cohorte(?)`,[params.id_cohort], function(
       data
     ) {
+   
       if (data.message.length == 0) {
         ws.cell(1, 1)
           .string("No hay datos para esta consulta.")
@@ -328,7 +330,7 @@ module.exports = function(app) {
         ws.cell(1, 86)
           .string(`Cohorte`)
           .style(style_head);
-
+         console.log(data.message[0])
         data.message[0].forEach(function(x) {
           /*Cuerpo del reporte*/
           ws.cell(cont, 1)

@@ -1,4 +1,5 @@
 module.exports = ({ pendientes, cerrados, resueltos }) => {
+
   const today = new Date();
   return `
       <!doctype html>

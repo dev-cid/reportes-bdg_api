@@ -61,9 +61,12 @@ module.exports = function(app) {
   app.post(`${API_BASE}/materia`, function(req, res) {
     // _db.query(`CALL sp_cohorte_materia()`, function(data) {
     var params = req.body;
-    _db.query(
-      `CALL sp_cohorte_materia(${params.id_cohort}, ${params.subject})`,
+    console.log(params,"*")
+    _db.procedure(
+      `CALL sp_cohorte_materia(?,?)`,
+      [params.id_cohort, params.subject],
       function(data) {
+       
         if (data.message.length == 0) {
           ws.cell(1, 1)
             .string("No hay datos para esta consulta.")
