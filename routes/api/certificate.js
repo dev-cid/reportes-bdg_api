@@ -9,7 +9,8 @@ const ctrl_certificate = require("../../controller/CertificateController");
 /*Modulo de routes*/
 module.exports = function(app) {
   /*Generación de pdf*/
-  app.post(`${API_BASE}/create_pdf/:id`, (req, res) => {
+  app.get(`${API_BASE}/create_pdf/:id`, (req, res) => {
+
     ctrl_certificate.show_course_user(req.params.id, data => {
       pdf
         .create(pdfTemplate(data.message[0]), {})

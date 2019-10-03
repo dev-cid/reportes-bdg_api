@@ -63,10 +63,8 @@ module.exports = function(app) {
     var params = req.body;
     console.log(params,"*")
     _db.procedure(
-      `CALL sp_cohorte_materia(?,?)`,
-      [params.id_cohort, params.subject],
+      `CALL sp_cohorte_materia(?,?)`,[params.id_cohort, params.subject],
       function(data) {
-       
         if (data.message.length == 0) {
           ws.cell(1, 1)
             .string("No hay datos para esta consulta.")

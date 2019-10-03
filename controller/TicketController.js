@@ -141,6 +141,7 @@ module.exports = {
       _db.query_l(`SELECT * FROM evidences WHERE id_ticket = ${id}`, function(
         x
       ) {
+        console.log(x.message)
         data.new = x.message;
         return cb({
           message: data.message,
@@ -154,7 +155,7 @@ module.exports = {
   show_detail: function(id, cb) {
     var array_historic = [];
     _db.query_l(
-      `SELECT * FROM historic_tickets WHERE id_ticket = ${id} ORDER BY id DESC`,
+      `SELECT * FROM historic_tickets WHERE id_ticket = ${id}`,
       function(data) {
         data.message.forEach(element => {
           array_historic.push(element.id);
@@ -241,6 +242,7 @@ module.exports = {
     };
     var validate = new validator(req, rules);
     if (validate.passes()) {
+        console.log(req)
       _db.create_l("historic_tickets", req, function(data) {
         if (data.status != 200) {
           return cb(data);
@@ -356,6 +358,7 @@ module.exports = {
     _db.query_l(
       `CALL sp_report_ticket('${body.start_date}', '${body.end_date}')`,
       function(data) {
+        console.log(data.message)
         return cb(data);
       }
     );
