@@ -1,13 +1,51 @@
 const API_BASE = "/api/ticket";
 const ctrl_ticket = require("../../controller/TicketController");
 
+const excel = require("excel4node");
+var wb = new excel.Workbook();
+var ws = wb.addWorksheet("Hoja1");
+
 /*Upfile*/
 const multer = require("multer");
 const uploads = multer();
-
-const pdf = require("html-pdf");
-/*Plantilla para el pdf*/
-const pdfTemplate = require("../../template/pdf/ticket");
+var style_head = wb.createStyle({
+  font: {
+    size: 10,
+    bold: true,
+    name: "Helvetica"
+  },
+  alignment: {
+    wrapText: true,
+    horizontal: "center"
+  },
+  fill: {
+    type: "pattern",
+    patternType: "solid",
+    fgColor: "#9dccb5"
+  },
+  border: {
+    left: {
+      style: "thin",
+      color: "000000"
+    },
+    right: {
+      style: "thin",
+      color: "000000"
+    },
+    top: {
+      style: "thin",
+      color: "000000"
+    },
+    bottom: {
+      style: "thin",
+      color: "000000"
+    },
+    diagonal: {
+      style: "thin",
+      color: "000000"
+    }
+  }
+});
 
 module.exports = function(app) {
   /*Traer los tipos de tickets*/
@@ -27,6 +65,13 @@ module.exports = function(app) {
   app.get(`${API_BASE}/cohort`, (req, res) => {
     console.log("maravilloso")
     ctrl_ticket.cohorts(function(data) {
+      res.json(data);
+    });
+  });
+
+   //Cohorte for teacher
+  app.get(`${API_BASE}/teacher-cohort/:id_user`, (req, res) => {
+    ctrl_ticket.cohort_for_teacher(req.params.id_user, function(data) {
       res.json(data);
     });
   });
@@ -122,9 +167,10 @@ module.exports = function(app) {
   });
 
   /*Actualizar gestor de ticket*/
-  app.post(`${API_BASE}/updateManager/:id_user/:id_ticket`, (req, res) => {
+  app.post(`${API_BASE}/updateManager/:id_user/:manager/:id_ticket`, (req, res) => {
     ctrl_ticket.update_manager(
       req.params.id_user,
+      req.params.manager,
       req.params.id_ticket,
       function(data) {
         res.json(data);
@@ -133,16 +179,58 @@ module.exports = function(app) {
   });
 
   /*Generación de pdf*/
-  app.post(`${API_BASE}/create_report_ticket`, (req, res) => {
-    ctrl_ticket.show_report_ticket(req, data => {
-      pdf
-        .create(pdfTemplate(data.message[0][0]), {})
-        .toFile(`${__dirname}/reporte_ticket.pdf`, err => {
-          if (err) {
-            return Promise.reject();
-          }
-          res.sendFile(`${__dirname}/reporte_ticket.pdf`);
-        });
+   app.post(`${API_BASE}/create_report_ticket`, (req, res) => {
+    ctrl_ticket.show_report_ticket(req, data => { 
+      
+      ws.cell(1, 1)
+      .string(`Usuario`)
+      .style(style_head);
+    ws.cell(1, 2)
+      .string(`Correo de usuario`)
+      .style(style_head);
+    ws.cell(1, 3)
+      .string(`Tikeck`)
+      .style(style_head);
+    ws.cell(1, 4)
+      .string(`Cohorte`)
+      .style(style_head);
+    ws.cell(1, 5)
+      .string(`Detalle`)
+      .style(style_head);
+    ws.cell(1, 6)
+      .string(`Fecha`)
+      .style(style_head);
+    ws.cell(1, 7)
+      .string(`Estado`)
+      .style(style_head);
+
+
+      let cont = 2
+      data.message[0].forEach(function(x, i) {
+        /*Cuerpo del reporte*/
+        ws.cell(cont, 1)
+          .string(`${x.Usuario}`)
+        ws.cell(cont, 2)
+          .string(`${x['Correo de usuario']}`)
+        ws.cell(cont, 3)
+          .string(`${x.Ticket}`)
+        ws.cell(cont, 4)
+          .string(`${x.Cohorte}`)
+        ws.cell(cont, 5)
+          .string(`${x.Detalle}`)
+        ws.cell(cont, 6)
+          .string(`${x.Fecha}`)
+        ws.cell(cont, 7)
+          .string(`${x.Estado}`)
+          cont++
+      });
+      const today = new Date();
+      wb.write(
+        `reporte_tickes_${today.getDate()}/${today.getMonth() +
+          1}/${today.getFullYear()}-${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}.xlsx`,
+        res
+      );
+
     });
   });
 };

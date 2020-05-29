@@ -4,6 +4,17 @@ const _db = require("../../model/_db");
 const today = new Date();
 const ctrl_report = require("../../controller/ReportController");
 
+
+module.exports = function(app) {
+  app.post(`${API_BASE}/materia`, function(req, res) {
+    // _db.query(`CALL sp_cohorte_materia()`, function(data) {
+    var params = req.body;
+    console.log(params,"*")
+    _db.query(
+       `CALL sp_cohorte_materia('${params.id_cohort}','${params.subject}')`,
+      function(data) {
+      
+      
 var wb = new excel.Workbook();
 var ws = wb.addWorksheet("Hoja1");
 
@@ -56,21 +67,11 @@ var style_head = wb.createStyle({
     }
   }
 });
-
-module.exports = function(app) {
-  app.post(`${API_BASE}/materia`, function(req, res) {
-    // _db.query(`CALL sp_cohorte_materia()`, function(data) {
-    var params = req.body;
-    console.log(params,"*")
-    _db.procedure(
-      `CALL sp_cohorte_materia(?,?)`,
-      [params.id_cohort, params.subject],
-      function(data) {
        
-        if (data.message.length == 0) {
-          ws.cell(1, 1)
-            .string("No hay datos para esta consulta.")
-            .style(style);
+        if (data.message[0].length == 0) {
+           return res.json({
+            message :"No hay datos para esta consulta."
+          }).status(404)
         } else {
           /*Encabezados del reporte*/
           var cont = 2;
@@ -111,7 +112,7 @@ module.exports = function(app) {
               .string(`${x.Correo}`)
               .style(style);
             ws.cell(cont, 4)
-              .string(`${x.materia}`)
+              .string(`${x.Materia}`)
               .style(style);
             ws.cell(cont, 5)
               .string(`${x.Nota_Sistema}`)

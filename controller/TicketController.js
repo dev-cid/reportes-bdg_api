@@ -154,7 +154,7 @@ module.exports = {
   show_detail: function(id, cb) {
     var array_historic = [];
     _db.query_l(
-      `SELECT * FROM historic_tickets WHERE id_ticket = ${id} ORDER BY id DESC`,
+      `SELECT * FROM historic_tickets WHERE id_ticket = ${id} ORDER BY id `,
       function(data) {
         data.message.forEach(element => {
           array_historic.push(element.id);
@@ -182,7 +182,7 @@ module.exports = {
   },
 
   cohorts: function(cb) {
-    console.log(2)
+
     _db.query(
       `SELECT c.id, c.name FROM mdl_cohort c
        WHERE c.visible = 1   
@@ -192,13 +192,28 @@ module.exports = {
       }
     );
   },
+  
+  cohort_for_teacher: (id_teacher, cb)=>{
+
+    _db.query(
+      `SELECT DISTINCT g.name FROM mdl_groups as g
+      JOIN  mdl_groups_members AS gm ON gm.groupid = g.id
+      JOIN mdl_user AS u ON u.id = gm.userid
+      AND u.id = ${id_teacher}`,
+      (data)=>{
+         return cb(data);
+      }
+    )
+  },
 
   cohort: function(id_user, cb) {
     _db.query(
-      `SELECT c.id, c.name FROM mdl_cohort c
-       JOIN mdl_cohort_members cm ON cm.cohortid = c.id
-       WHERE c.visible = 1 and cm.userid = ${id_user}
-       ORDER BY name ASC`,
+      // `SELECT c.id, c.name FROM mdl_cohort c
+      //  JOIN mdl_cohort_members cm ON cm.cohortid = c.id
+      //  WHERE c.visible = 1 and cm.userid = ${id_user}
+      //  ORDER BY name ASC`
+    `SELECT c.id, c.name FROM mdl_cohort c WHERE c.visible = 1 and  
+     name LIKE '%${id_user}%'`,
       function(data) {
         return cb(data);
       }
@@ -223,9 +238,9 @@ module.exports = {
     );
   },
 
-  update_manager: function(id, id_ticket, cb) {
+  update_manager: function(id, manager, id_ticket, cb) {
     _db.query_l(
-      `UPDATE ticket SET id_manager = '${id}' WHERE id = ${id_ticket}`,
+      `UPDATE ticket SET id_manager = '${id}', manager_name = '${manager}'  WHERE id = ${id_ticket}`,
       function(data) {
         return cb(data);
       }
@@ -239,6 +254,8 @@ module.exports = {
       id_user: "required|numeric",
       username: "required"
     };
+
+
     var validate = new validator(req, rules);
     if (validate.passes()) {
       _db.create_l("historic_tickets", req, function(data) {
@@ -293,8 +310,10 @@ module.exports = {
                         status: 500
                       });
                     } else {
+                      const status = req.id_rol == 9 ? 'Con respuesta': 'En proceso'
+                      console.log(`UPDATE ticket SET status = '${status}'  WHERE id = ${req.id_ticket}`)
                       _db.query_l(
-                        `UPDATE ticket SET status = 'Resuelto' WHERE id = ${req.id_ticket}`,
+                        `UPDATE ticket SET status = '${status}'  WHERE id = ${req.id_ticket}`,
                         function(res) {
                           _db.query_l(
                             "SELECT id FROM historic_tickets ORDER BY id desc LIMIT 1",

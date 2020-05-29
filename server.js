@@ -13,6 +13,8 @@ require("./routes/api/report_clf_cohorte")(app);
 require("./routes/api/report_clf_coordinador")(app);
 require("./routes/api/report_clf_materia")(app);
 require("./routes/api/report_clf_municipio")(app);
+require("./routes/api/report_student")(app);
+require("./routes/api/system")(app);
 require("./routes/views")(app);
 
 /*Configuración de puerto para compilar*/

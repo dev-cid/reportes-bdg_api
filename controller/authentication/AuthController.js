@@ -10,7 +10,7 @@ module.exports = {
          FROM mdl_role_assignments r
          JOIN mdl_user u ON r.userid = u.id
          JOIN mdl_role rol ON rol.id = r.roleid WHERE u.username = '${req.username}' 
-         and u.confirmed = 1 and u.deleted = 0 and u.suspended = 0 AND r.roleid in (1,9,11,4,5) LIMIT 1
+         and u.confirmed = 1 and u.deleted = 0 and u.suspended = 0 AND r.roleid in (1,9,11,4,3,5) ORDER BY r.roleid DESC LIMIT 1
        `,
       function(results) {
         if (results.message.length == 0)
